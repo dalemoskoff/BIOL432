@@ -1,0 +1,51 @@
+---
+#Project Info
+title: "Assignment 3"
+---
+
+## Project Info
+ Date: 27/01/2021       
+ Author: Dale Moskoff      
+ Link to GitHub Repository: [BIOL432](https://github.com/dalemoskoff/BIOL432)
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rmarkdown)
+library(dplyr)
+```
+
+```{r}
+#Load FallopiaData.csv
+setwd("/Users/dalemoskoff/Desktop/Biology/BIOL 432/Assignment 3/InputData/")
+Fallo<-read.csv("FallopiaData.csv")
+
+#Manipulate dataset
+Fallo<-filter(Fallo,Total>=60) # Remove rows with 'Total' biomass < 60
+Fallo<-select(Fallo,Total,Taxon,Scenario,Nutrients,-(Symphytum:Fallopia),-PotNum,-Pct_Fallopia) # Reorder the columns so they are in the order: 'Total', 'Taxon', 'Scenario', 'Nutrients', and remove all other columns
+Fallo<-mutate(Fallo,TotalG=Total*1000) # Make a new column called 'TotalG' which converts the 'Total' column from mg to grams 
+Fallo<-select(Fallo,TotalG,Taxon,Scenario,Nutrients,-Total) # Replace the 'Total' column with 'TotalG'
+Fallo # View new manipulated dataset
+```
+```{r}
+# A custom function that will take two inputs from the user: 'v' is a vector of data to process (e.g. a column from a data.frame object) and 's' is a string that defines what calculation to perform
+my.function<-function(v,s){
+  if (s=="Average"){
+    return(mean(v))
+  }  # If s="Average", the average value for v will be returned
+  else if (s=="Sum"){
+    return(sum(v))
+    } # If s="Sum", the sum of values for v will be returned
+   else if (s=="Observations") {
+     return(length(v))
+   } # If s="Observations", the count of the number of observed values for v will be returned
+  else {
+    return("Error")
+  } # If s is defined as anything else, an error message will be returned
+}
+X<-my.function(Fallo$Taxon,"Observations") # Obtain the count of the total number of observations in the 'Taxon' column of Fallo
+Y<-my.function(Fallo$TotalG[Fallo$Nutrients=="low"],"Average") # Obtain the average value of 'TotalG' for the low 'Nutrient' concentration group of Fallo
+Z<-my.function(Fallo$TotalG[Fallo$Nutrients=="high"],"Average") # Obtain the average value of 'TotalG' for the high 'Nutrient' concentration group of Fallo
+NewData<-c(X,Y,Z) # New data.frame object containing the data calculations above
+write.csv(NewData,"/Users/dalemoskoff/Desktop/Biology/BIOL 432/Assignment 3/Output/WrangledData.csv") # Save the new data.frame object to a file called 'WrangledData.csv' in the Output folder of my 'BIOL432' GitHub repository
+```
