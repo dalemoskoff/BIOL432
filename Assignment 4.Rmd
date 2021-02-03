@@ -1,0 +1,30 @@
+---
+title: "Regex.Rmd"
+author: "Dale Moskoff"
+date: "03/02/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+```{r cars}
+## Import dataset 
+setwd("/Users/dalemoskoff/Desktop/Biology/BIOL 432/Assignment 3/InputData/")
+MData<-read.csv("measurements.csv")
+
+## Add a new column called Sp that shortens the first word of each Organism name to only the first letter and a period.
+MData<-mutate(MData,Sp=sub("(\\w)\\w+","\\1.",MData$Organism))
+MData #View dataset with added column
+
+## Create a new dataset with Sp column instead of Organism column, moved to the beginning in place of the original Organism column.
+MData2<-select(MData,Sp,Limb.width:Observer,-Organism)
+MData2 #View new dataset
+
+## Save new dataset as a new file
+write.csv(MData2,"/Users/dalemoskoff/Desktop/Biology/BIOL 432/Assignment 3/Output/MeasShort.csv") # Save the new data.frame object to a file called 'MeasShort.csv' in the Output folder of my 'BIOL432' GitHub repository
+```
+
+
